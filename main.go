@@ -18,15 +18,24 @@ var metrics *mediawiki.SiteinfoResponse
 func getSiteinfo(url string) (*mediawiki.SiteinfoResponse, error) {
 	c, err := mediawiki.New(url, "mediawiki-exporter")
 	if err != nil {
-		return nil, fmt.Errorf("failed to build mediawiki client")
+		return nil, fmt.Errorf("failed to build mediawiki client: %w", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
+	password := os.Getenv("MEDIAWIKI_PASSWORD")
+	username := os.Getenv("MEDIAWIKI_USERNAME")
+
+	if len(username) > 0 {
+		if _, err := c.BotLogin(ctx, username, password); err != nil {
+			return nil, fmt.Errorf("mediawiki login failure: %w", err)
+		}
+	}
+
 	r, err := c.Siteinfo().Prop("statistics").Do(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve mediawiki statistics")
+		return nil, fmt.Errorf("failed to retrieve mediawiki statistics: %w", err)
 	}
 
 	return &r, nil
@@ -52,7 +61,7 @@ func main() {
 
 	// Initialize the data and fail fast if you can't
 	if metrics, err = getSiteinfo(url); err != nil {
-		log.Fatal("Failed to start:", err)
+		log.Fatal("Failed to start: ", err)
 	} else {
 		log.Println("Mediawiki exporter started")
 	}
@@ -68,12 +77,14 @@ func main() {
 
 	// Create a non-global registry.
 	reg := prometheus.NewRegistry()
-	counters = NewCounters(reg)
+
+	// Set up the counters
+	NewCounters(reg)
 
 	// Expose metrics and custom registry via an HTTP server
 	// using the HandleFor function. "/metrics" is the usual endpoint for that.
-	http.HandleFunc("/health", health)
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
+	http.HandleFunc("/health", health)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
