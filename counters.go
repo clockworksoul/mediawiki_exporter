@@ -5,57 +5,57 @@ import (
 )
 
 func NewCounters(reg prometheus.Registerer) {
-	activeusers := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	activeusers := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_activeusers",
 			Help: "Number of active users.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Activeusers) },
 	)
-	admins := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	admins := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_admins",
 			Help: "Number of administrators.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Admins) },
 	)
-	articles := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	articles := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_articles",
 			Help: "Number of articles.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Articles) },
 	)
-	edits := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	edits := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_edits",
 			Help: "Number of edits.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Edits) },
 	)
-	images := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	images := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_images",
 			Help: "Number of images.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Images) },
 	)
-	jobs := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	jobs := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_jobs",
 			Help: "Number of jobs.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Jobs) },
 	)
-	pages := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	pages := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_pages",
 			Help: "Number of pages.",
 		},
 		func() float64 { return float64(metrics.Query.Statistics.Pages) },
 	)
-	users := prometheus.NewCounterFunc(
-		prometheus.CounterOpts{
+	users := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
 			Name: "mediawiki_statistics_users",
 			Help: "Number of users.",
 		},
