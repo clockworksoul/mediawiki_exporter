@@ -14,7 +14,7 @@ RUN GOOS=linux go build -a -installsuffix cgo -o mwe
 
 # Part 3: Build the Mediawiki Exporter image proper
 #
-FROM ubuntu:20.04 as image
+FROM ubuntu:22.04 as image
 
 RUN apt update                                              \
   && apt-get -y --force-yes install --no-install-recommends \
@@ -24,8 +24,8 @@ RUN apt update                                              \
   && apt-get autoremove                                     \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY --from=builder /mwe .
+COPY --from=builder /mwe /bin
 
 EXPOSE 8000
 
-CMD ["/mwe"]
+CMD ["mwe"]
