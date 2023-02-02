@@ -11,3 +11,5 @@ Emits the following metrics so far:
 * `mediawiki_statistics_jobs`: Current number of jobs.
 * `mediawiki_statistics_pages`: Current number of pages.
 * `mediawiki_statistics_users`: Current number of users.
+
+The container image for the exporter is available at `clockworksoul/mediawiki-exporter`.
