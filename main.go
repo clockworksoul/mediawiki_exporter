@@ -14,8 +14,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var metrics *mediawiki.SiteinfoResponse
-
 func getSiteinfo(url string) (*mediawiki.SiteinfoResponse, error) {
 	c, err := mediawiki.New(url, "mediawiki-exporter")
 	if err != nil {
@@ -83,9 +81,11 @@ func main() {
 	go func() {
 		t := time.NewTicker(time.Minute)
 		for range t.C {
+			m.Lock()
 			if metrics, err = getSiteinfo(url); err != nil {
 				log.Println("Error:", err)
 			}
+			m.Unlock()
 		}
 	}()
 
