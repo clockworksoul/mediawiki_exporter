@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/clockworksoul/mediawiki"
@@ -29,13 +30,13 @@ func getSiteinfo(url string) (*mediawiki.SiteinfoResponse, error) {
 
 	if len(username) > 0 {
 		if _, err := c.BotLogin(ctx, username, password); err != nil {
-			return nil, fmt.Errorf("mediawiki login failure: %w", err)
+			return nil, err
 		}
 	}
 
 	r, err := c.Siteinfo().Prop("statistics").Do(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve mediawiki statistics: %w", err)
+		return nil, fmt.Errorf("failed to retrieve statistics: %w", err)
 	}
 
 	return &r, nil
@@ -52,16 +53,29 @@ func health(w http.ResponseWriter, _ *http.Request) {
 func main() {
 	var err error
 
-	if len(os.Args) == 1 {
-		fmt.Fprintln(os.Stderr, "Must include target wiki API URL")
-		os.Exit(1)
+	url := os.Getenv("MEDIAWIKI_API_URL")
+
+	if url == "" && len(os.Args) == 1 {
+		fmt.Fprintln(os.Stderr, "Must include target wiki API URL or use the MEDIAWIKI_API_URL envvar")
+		os.Exit(3)
 	}
 
-	url := os.Args[1]
+	if len(os.Args) > 1 {
+		url = os.Args[1]
+	}
 
 	// Initialize the data and fail fast if you can't
 	if metrics, err = getSiteinfo(url); err != nil {
-		log.Fatal("Failed to start: ", err)
+		if strings.Contains(err.Error(), "login failure: ") {
+			fmt.Fprintln(os.Stderr, "Invalid credentials:", err)
+			os.Exit(4)
+		} else if strings.Contains(err.Error(), "readapidenied: ") {
+			fmt.Fprintln(os.Stderr, "Access denied:", err)
+			os.Exit(5)
+		}
+
+		fmt.Fprintln(os.Stderr, "Failed to start:", err)
+		os.Exit(2)
 	} else {
 		log.Println("Mediawiki exporter started")
 	}
