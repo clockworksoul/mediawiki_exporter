@@ -1,6 +1,10 @@
 # Mediawiki Exporter
 A Prometheus exporter for Mediawiki.
 
+The container image for the exporter is available at `clockworksoul/mediawiki-exporter`.
+
+## Metrics
+
 Emits the following metrics so far:
 
 * `mediawiki_statistics_activeusers`: Current number of active users.
@@ -12,7 +16,7 @@ Emits the following metrics so far:
 * `mediawiki_statistics_pages`: Current number of pages.
 * `mediawiki_statistics_users`: Current number of users.
 
-The container image for the exporter is available at `clockworksoul/mediawiki-exporter`.
+Because all of these values can, in theory, decrease (such as when a resource is deleted), all of the above use gauges. In practice, however, significant downward movements should be rare, so Prometheus functions like `rate()` should still be useful.
 
 ## Execution
 
