@@ -1,7 +1,7 @@
 # Mediawiki Exporter
-A Prometheus exporter for Mediawiki.
+The Mediawiki exporter is a [Prometheus exporter](https://prometheus.io/docs/instrumenting/exporters/) for [Mediawiki](https://www.mediawiki.org/wiki/MediaWiki). It reports on data such as the number or users, number of edits, and the number of [pages and articles](https://www.mediawiki.org/wiki/Manual:Article_count).
 
-The container image for the exporter is available at `clockworksoul/mediawiki-exporter`.
+The container image for the exporter is available at [clockworksoul/mediawiki-exporter](https://hub.docker.com/repository/docker/clockworksoul/mediawiki-exporter/).
 
 ## Metrics
 
